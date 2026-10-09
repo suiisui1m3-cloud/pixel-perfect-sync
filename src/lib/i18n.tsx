@@ -1,3 +1,4 @@
+import type React from "react";
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 
 export type Lang = "ar" | "en";
@@ -32,7 +33,9 @@ const dict = {
 export type TKey = keyof (typeof dict)["ar"];
 
 type Ctx = { lang: Lang; dir: "rtl" | "ltr"; setLang: (l: Lang) => void; t: (k: TKey) => string };
-const I18nContext = createContext<Ctx | null>(null);
+// Cache on globalThis so hot reloads don't create a second, mismatched context.
+const g = globalThis as unknown as { __i18nCtx?: React.Context<Ctx | null> };
+const I18nContext = (g.__i18nCtx ??= createContext<Ctx | null>(null));
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("ar");
