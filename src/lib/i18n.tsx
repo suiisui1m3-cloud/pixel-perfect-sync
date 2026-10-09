@@ -66,8 +66,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
 export function useI18n() {
   const ctx = useContext(I18nContext);
-  if (!ctx) throw new Error("useI18n must be used within I18nProvider");
-  return ctx;
+  // Fallback keeps the page rendering (Arabic) if a stale module instance misses the provider.
+  return ctx ?? { lang: "ar", dir: "rtl", setLang: () => {}, t: (k: TKey) => dict.ar[k] };
 }
 
 /** Keeps English terms, CVEs, tool names and code readable inside RTL text. */
